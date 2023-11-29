@@ -1,0 +1,12 @@
+BasedOnStyle: Google
+
+ColumnLimit: 120
+IndentWidth: 4
+AccessModifierOffset: -2
+
+AlignAfterOpenBracket: BlockIndent
+AllowShortFunctionsOnASingleLine: Empty
+BinPackParameters: false
+InsertBraces: true
+InsertNewlineAtEOF: true
+SeparateDefinitionBlocks: Always
