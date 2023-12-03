@@ -142,6 +142,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
                     os << ' ';
                 }
                 os << ' ' << ' ';
+                ascii[i % bytes_per_line] = 0;
             }
         }
         if (i % bytes_per_line == 0) {
