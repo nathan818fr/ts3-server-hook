@@ -35,7 +35,7 @@ find_sources(TS3SH "${TS3SH_DIR}/src" "${TS3SH_PLATFORMS}")
 add_library(ts3-server-hook SHARED "${TS3SH_SOURCES}" "${TS3SH_HEADERS}")
 set_target_properties(ts3-server-hook PROPERTIES PREFIX "") # Remove "lib" prefix
 
-target_compile_features(ts3-server-hook PUBLIC cxx_std_23)
+target_compile_features(ts3-server-hook PUBLIC cxx_std_17)
 target_compile_options(ts3-server-hook PRIVATE "$<$<CONFIG:Debug>:-Wall;-Werror;-Wextra>")
 target_compile_options(ts3-server-hook PUBLIC "$<$<CONFIG:Debug>:-ggdb;-O0>")
 target_compile_options(ts3-server-hook PUBLIC "$<$<CONFIG:Release>:-O3>")

@@ -35,10 +35,10 @@ buffer_ptr Protocol::write_capture(
         1 +  // flags
         len  // data
     );
-    packet->write_ubyte(std::to_underlying(type));  // packet_id (same as CaptureType: 1 = COMMAND, 2 = VOICE)
-    packet->write_ushort(virtual_server_id);        // virtual_server_id
-    packet->write_ubyte(is_server_query ? 1 : 0);   // flags
-    packet->write_bytes(data, len);                 // data
+    packet->write_ubyte(to_underlying(type));      // packet_id (same as CaptureType: 1 = COMMAND, 2 = VOICE)
+    packet->write_ushort(virtual_server_id);       // virtual_server_id
+    packet->write_ubyte(is_server_query ? 1 : 0);  // flags
+    packet->write_bytes(data, len);                // data
     return packet;
 }
 

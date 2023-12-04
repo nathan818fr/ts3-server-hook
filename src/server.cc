@@ -57,7 +57,7 @@ void Server::start(const std::string& ts3_version) {
 
 void Server::capture(CaptureType type, int virtual_server_id, bool is_server_query, const void* data, int len) {
     if (DEBUG_ENABLED) {
-        log() << "Captured packet (type=" << std::to_underlying(type) << ", virtual_server_id=" << virtual_server_id
+        log() << "Captured packet (type=" << to_underlying(type) << ", virtual_server_id=" << virtual_server_id
               << ", is_server_query=" << log_bool(is_server_query) << ", len=" << len << ")" << log_endl
               << log_hex_dump(data, len) << log_endl;
     }

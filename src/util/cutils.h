@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <type_traits>
 
 namespace ts3_server_hook {
 
@@ -17,6 +18,11 @@ D saturating_cast(S value) {
         return max;
     }
     return static_cast<D>(value);
+}
+
+template <typename E>
+constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
+    return static_cast<typename std::underlying_type<E>::type>(e);
 }
 
 #define TS3SH_HANDLER(fn) [this]<typename... TArgs>(TArgs&&... args) { return this->fn(std::forward<TArgs>(args)...); }
