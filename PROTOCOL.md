@@ -31,11 +31,12 @@ All packets are sent from the hook to the client (so the client should not send 
 
 ### Command Capture (0x01)
 
-| Field             | Type       | Description                                            |
-|-------------------|------------|--------------------------------------------------------|
-| virtual_server_id | ushort     | The TS3 virtual server ID                              |
-| flags             | ubyte      | Capture flags (see below)                              |
-| data              | _variable_ | Capture data (see [TS3 Server Spec](#ts3-server-spec)) |
+| Field             | Type       | Description                                                          |
+|-------------------|------------|----------------------------------------------------------------------|
+| virtual_server_id | ushort     | The TS3 virtual server ID                                            |
+| flags             | ubyte      | Capture flags (see below)                                            |
+| teamspeak_header  | _variable_ | Capture header (see [TeamSpeak Server Spec](#teamspeak-server-spec)) |
+| teamspeak_data    | _variable_ | Capture data (see [TeamSpeak Server Spec](#teamspeak-server-spec))   |
 
 **Capture flags** is a bitfield with the following flags:
 - Bit 1 (0x01): `is_server_query`, set if the capture is from a server query
@@ -52,23 +53,34 @@ Heartbeat packets are sent to the client every 5 seconds.
 It is recommended for the clients to disconnect if no heartbeat is received for
 15 seconds.
 
-## TS3 Server Spec
+## TeamSpeak Server Spec
 
 From [ReSpeak tsdeclarations][ts3protocol.md].
 
 [ts3protocol.md]: https://github.com/ReSpeak/tsdeclarations/blob/e19149d13ec114fd9756bc726e8f86bf47ae9181/ts3protocol.md
 
-### Command
+### Header
+
+| Field          | Type      | Description                     |
+|----------------|-----------|---------------------------------|
+| (mac)          | ubyte\[8] | EAX Message Authentication Code |
+| (packet_id)    | ushort    | The TeamSpeak packet ID         |
+| client_id      | ushort    | The TeamSpeak client ID         |
+| (packet_flags) | ubyte     | The TeamSpeak packet flags      |
+
+_Fields between paranthesis are those you probably don't need._
+
+### Command Data
 
 A TS3 query-like command, encoded in UTF-8.
 
-### Voice
+### Voice Data
 
-| Field            | Type       | Description                           |
-|------------------|------------|---------------------------------------|
-| voice_packet_id  | ushort     | The voice packet ID                   |
-| voice_codec      | ubyte      | The voice codec type                  |
-| voice_data       | _variable_ | The voice data (depends on the codec) |
+| Field           | Type       | Description                           |
+|-----------------|------------|---------------------------------------|
+| voice_packet_id | ushort     | The voice packet ID                   |
+| voice_codec     | ubyte      | The voice codec type                  |
+| voice_data      | _variable_ | The voice data (depends on the codec) |
 
 `voice_codec` 4 is Opus (1 channel) and 5 is Opus Music (2 channels).
 In both cases, the `voice_data` is an Opus frame (48kHz, 20ms).
