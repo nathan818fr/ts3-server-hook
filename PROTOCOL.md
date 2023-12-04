@@ -9,7 +9,7 @@ All packets are sent from the hook to the client (so the client should not send 
 | Name   | Size (bytes) | Description                                             |
 |--------|--------------|---------------------------------------------------------|
 | ubyte  | 1            | Unsigned 8-bit integer                                  |
-| ushort | 2            | Unsigned 16-bit integer                                 |
+| ushort | 2            | Unsigned 16-bit integer (big-endian)                    |
 | string | _variable_   | UTF-8 string prefixed with its size in bytes as a ubyte |
 
 ## Packet format
