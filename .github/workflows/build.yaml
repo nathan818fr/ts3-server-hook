@@ -1,0 +1,96 @@
+---
+
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'The platforms to build (regex, all if not specified)'
+        required: false
+
+jobs:
+
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+      release: ${{ steps.set-version.outputs.release }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set version
+        id: set-version
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF_TYPE" == 'tag' ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            release=true
+          else
+            version='test'
+            release=false
+          fi
+          printf 'Version: %s\n' "$version"
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'Release: %s\n' "$release"
+          printf 'release=%s\n' "$release" >> "$GITHUB_OUTPUT"
+      - name: Set matrix
+        id: set-matrix
+        run: |
+          matrix=$(jq -Mcs \
+            --arg filter "^${INPUT_PLATFORMS:-.*}$" \
+            '{include: [.[] | select(.platform|test($filter))]}' \
+            <<<'
+              {"platform": "linux-gnu-x86_64", "os": "ubuntu-latest"}
+              '
+          )
+          printf 'Matrix: %s\n' "$(jq <<< "$matrix")"
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT_PLATFORMS: ${{ inputs.platforms }}
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Fetch dependencies
+        run: ./tools/fetch-libmem.sh
+        shell: bash
+      - name: Build
+        run: ./tools/build-release.sh "$BUILD_PLATFORM"
+        shell: bash
+        env:
+          BUILD_PLATFORM: ${{ matrix.platform }}
+          TS3SH_BUILD_OUT_DIR: out/ts3-server-hook-${{ needs.prepare.outputs.version }}-${{ matrix.platform }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ts3-server-hook-${{ needs.prepare.outputs.version }}-${{ matrix.platform }}
+          path: out/ts3-server-hook-${{ needs.prepare.outputs.version }}-${{ matrix.platform }}.tar.gz
+
+  release:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # allows the action to create a release
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          omitBody: true
+          prerelease: true
+          artifacts: ts3-server-hook-*/ts3-server-hook-*.tar.gz
+          artifactContentType: application/gzip
+          artifactErrorsFailBuild: true

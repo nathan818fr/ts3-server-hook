@@ -135,7 +135,8 @@ function do_build() {
   printf '[+] Add stdlib information\n'
   case "$_PLATFORM" in
   linux-gnu-*)
-    ldd --version | head -n1 | awk '{print $NF}' | install -vD -m644 -- /dev/stdin "${_OUT_DIR}/GLIBC_VERSION.txt"
+    # ldd --version can cause exit 141 when stdout is closed early.
+    { ldd --version || true; } | head -n1 | awk '{print $NF}' | install -vD -m644 -- /dev/stdin "${_OUT_DIR}/GLIBC_VERSION.txt"
     ;;
   esac
 }
