@@ -4,10 +4,14 @@ shopt -s inherit_errexit
 
 declare -r LIBMEM_VERSION='4.2.1'
 
+SCRIPT_DIR=$(dirname -- "$(realpath -m -- "$0")")
+declare -gr SCRIPT_DIR
+REPO_DIR=$(dirname -- "$SCRIPT_DIR")
+declare -gr REPO_DIR
+
 function main() {
-  local script_dir libmem_dir libmem_platform libmem_url
-  script_dir=$(dirname -- "$(realpath -m -- "$0")")
-  libmem_dir="$(dirname -- "$script_dir")/external/libmem"
+  local libmem_dir libmem_platform libmem_url
+  libmem_dir="${REPO_DIR}/external/libmem"
   libmem_platform='linux-gnu-x86_64' # TODO: auto-detect
   libmem_url="https://github.com/nathan818fr/libmem-build/releases/download/v${LIBMEM_VERSION}/libmem-${LIBMEM_VERSION}-${libmem_platform}.tar.gz"
 
