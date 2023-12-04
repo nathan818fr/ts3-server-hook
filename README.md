@@ -20,7 +20,7 @@ by the server (messages, voice, etc.) and forward them through a socket.
 </thead>
 <tbody>
   <tr>
-    <td rowspan=2>Linux (glibc)</td>
+    <td rowspan=2>Linux (GNU/glibc)</td>
     <td>x86_64 <i>(64-bit)</i></td>
     <td>✅ 3.13.6 | 3.13.7</td>
   </tr>
@@ -29,7 +29,7 @@ by the server (messages, voice, etc.) and forward them through a socket.
     <td rowspan=5>❌ Not supported</td>
   </tr>
   <tr>
-    <td colspan=2>Linux (alpine)</td>
+    <td colspan=2>Linux (Alpine/musl)</td>
   </tr>
   <tr>
     <td colspan=2>FreeBSD</td>
